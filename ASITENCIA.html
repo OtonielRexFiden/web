@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <img src="https://www.prlog.org/11826902-parker-randall.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #333;
+        }
+        h1 {
+            color: #0277bd;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #0277bd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #0277bd;
+            color: white;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #0277bd;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <form id="dataForm">
+            <label for="status">Eventual o TC:</label>
+            <select id="status" name="status" required>
+                <option value="Eventual">Eventual</option>
+                <option value="TC">TC</option>
+            </select><br><br>
+            <label for="code">Código:</label>
+            <input type="number" id="code" name="code" required><br><br>
+            <label for="dpi">No. de DPI:</label>
+            <input type="number" id="dpi" name="dpi" required><br><br>
+            <label for="name">Nombre:</label>
+            <input type="text" id="name" name="name" required><br><br>
+            <label for="contractor">Nombre del Contratista:</label>
+            <input type="text" id="contractor" name="contractor" required><br><br>
+            <label for="job">Labor:</label>
+            <input type="number" id="job" name="job" required><br><br>
+            <label for="job">Finca:</label>
+            <input type="text" id="job" name="job" required><br><br>
+            <button type="button" onclick="addData()">Siguiente</button>
+        </form>
+    </div>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Eventual o TC</th>
+                <th>Código</th>
+                <th>No. de DPI</th>
+                <th>Nombre</th>
+                <th>Nombre del Contratista</th>
+                <th>Labor</th>
+                <th>Finca</th>
+                <th>Modificar</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <br>
+    <button onclick="downloadExcel()">Descargar Excel</button>
+    <footer>
+        Derechos de Autor &copy; 2024 OF PARKER RANDALL
+    </footer>
+    <script>
+        const dataForm = document.getElementById('dataForm');
+        const dataTable = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+
+        function addData() {
+            const formData = new FormData(dataForm);
+            const row = dataTable.insertRow();
+            formData.forEach((value, key) => {
+                const cell = row.insertCell();
+                cell.textContent = value;
+            });
+            const actionCell = row.insertCell();
+            actionCell.innerHTML = '<button onclick="editRow(this)">Editar</button> <button onclick="deleteRow(this)">Eliminar</button>';
+            dataForm.reset();
+        }
+
+        function editRow(button) {
+            const row = button.parentNode.parentNode;
+            document.getElementById('dpi').value = row.cells[0].textContent;
+            document.getElementById('name').value = row.cells[1].textContent;
+            document.getElementById('contractor').value = row.cells[2].textContent;
+            document.getElementById('job').value = row.cells[3].textContent;
+            document.getElementById('status').value = row.cells[4].textContent;
+            document.getElementById('code').value = row.cells[5].textContent;
+            deleteRow(button);
+        }
+
+        function deleteRow(button) {
+            const row = button.parentNode.parentNode;
+            dataTable.deleteRow(row.rowIndex - 1);
+        }
+
+        function downloadExcel() {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.table_to_sheet(document.getElementById('dataTable'));
+            XLSX.utils.book_append_sheet(wb, ws, "Datos");
+            XLSX.writeFile(wb, 'datos.xlsx');
+        }
+    </script>
+</body>
+</html>
